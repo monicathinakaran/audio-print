@@ -57,16 +57,20 @@ class AudioDatabase:
     def get_matches(self, hashes):
         """
         Search for matching fingerprints.
-        Fixes the 'hash_val' error and cleans up numpy data types.
+        FIX: Now handles a List of tuples [(hash, offset), ...]
         """
-        # 1. Convert all hashes to pure strings to avoid 'np.int64' errors
-        hash_list = [str(h) for h in hashes.keys()]
+        # 1. FIX: The input is a list of tuples, not a dictionary.
+        # We need to extract the first element (the hash) from each tuple.
+        try:
+            hash_list = [str(h[0]) for h in hashes]
+        except IndexError:
+            # Fallback safety if the list format is unexpected
+            return []
         
         if not hash_list:
             return []
 
-        # 2. Use the correct column name 'hash' (not hash_val)
-        # 3. Use ANY(%s) for safer, faster querying
+        # 2. Query the database
         query = """
             SELECT f.hash, s.song_name, f.offset_val
             FROM fingerprints f
