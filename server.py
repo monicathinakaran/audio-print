@@ -20,6 +20,10 @@ app.add_middleware(
 fingerprinter = AudioFingerprinter()
 db = AudioDatabase()
 
+@app.get("/")
+async def root():
+    return {"message": "AudioPrint Backend is Live! Use POST /identify to search."}
+
 @app.post("/identify")
 async def identify_endpoint(file: UploadFile = File(...)):
     # 1. Save the uploaded raw file (likely WebM despite the name)
