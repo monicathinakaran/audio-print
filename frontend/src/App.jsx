@@ -35,7 +35,7 @@ function App() {
 
         try {
           // REPLACE THIS WITH YOUR RENDER URL
-          const response = await fetch("https://audioprint-YOUR-APP.onrender.com/identify", {
+          const response = await fetch("https://audio-print.onrender.com/identify", {
             method: "POST",
             body: formData
           })
