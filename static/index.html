@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioPrint Web</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f0f2f5; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; border: none; border-radius: 8px; margin: 10px; transition: 0.2s; }
+        #recordBtn { background-color: #ff4757; color: white; }
+        #recordBtn:disabled { background-color: #ccc; }
+        #status { margin-top: 20px; font-weight: bold; color: #555; }
+        .result { margin-top: 20px; padding: 15px; background: #e1ffc7; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎵 AudioPrint</h1>
+    <p>Press record and play a song...</p>
+    
+    <button id="recordBtn">🎙️ Record (10s)</button>
+    
+    <div id="status">Ready</div>
+
+    <div id="resultBox" class="result">
+        <h2 id="songName">Song Name</h2>
+        <span id="confVal"></span>
+        <span id="timeVal"></span>
+    </div>
+</div>
+
+<script>
+    const recordBtn = document.getElementById('recordBtn');
+    const status = document.getElementById('status');
+    const resultBox = document.getElementById('resultBox');
+
+    recordBtn.addEventListener('click', async () => {
+        status.innerText = "Listening...";
+        recordBtn.disabled = true;
+        resultBox.style.display = "none";
+
+        try {
+            // 1. Get Microphone Stream
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // FIX: Explicitly check for supported mime types
+            let mimeType = 'audio/webm';
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                mimeType = 'audio/webm;codecs=opus';
+            } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                mimeType = 'audio/mp4'; // Safari fallback
+            }
+
+            console.log("Using MIME type:", mimeType); // Check console if this fails
+            const mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+            const audioChunks = [];
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                status.innerText = "Analyzing...";
+                
+                // 2. Create Audio Blob with the CORRECT mime type
+                const audioBlob = new Blob(audioChunks, { type: mimeType });
+                const formData = new FormData();
+                
+                // Rename file to .webm so backend knows what it is
+                formData.append("file", audioBlob, "recording.webm");
+
+                // 3. Send to Python Backend
+                try {
+                    const response = await fetch("http://127.0.0.1:8000/identify", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.status === "success") {
+                        status.innerText = "Match Found!";
+                        document.getElementById('songName').innerText = data.song;
+                        document.getElementById('confVal').innerText = data.confidence;
+                        document.getElementById('timeVal').innerText = data.offset_seconds;
+                        resultBox.style.display = "block";
+                    } else {
+                        status.innerText = "No match found.";
+                    }
+                } catch (err) {
+                    console.error(err);
+                    status.innerText = "Error connecting to server.";
+                }
+                
+                recordBtn.disabled = false;
+            };
+
+            // Start recording
+            mediaRecorder.start();
+
+            // Stop automatically after 5 seconds
+            setTimeout(() => {
+            mediaRecorder.stop();
+            stream.getTracks().forEach(track => track.stop()); // Turn off mic
+        }, 10000);
+
+        } catch (err) {
+            console.error("Mic Error:", err);
+            alert("Microphone access denied or error! Check console (F12).");
+            recordBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>

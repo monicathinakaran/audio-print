@@ -1,0 +1,13 @@
+#root { max-width: 1280px; margin: 0 auto; padding: 2rem; text-align: center; }
+.container { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+.card { background: #1a1a1a; padding: 2rem; border-radius: 16px; width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; }
+.icon-box { margin: 20px auto; height: 80px; display: flex; align-items: center; justify-content: center; }
+button { background-color: #646cff; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; }
+button:disabled { background-color: #444; cursor: not-allowed; }
+button:hover:not(:disabled) { background-color: #535bf2; }
+.result { background: #2a2a2a; margin-top: 20px; padding: 15px; border-radius: 8px; border: 1px solid #444; }
+.result h2 { margin: 0 0 10px 0; color: #4ade80; }
+.pulse { animation: pulse 1.5s infinite; }
+.spin { animation: spin 2s linear infinite; }
+@keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
