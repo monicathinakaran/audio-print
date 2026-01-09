@@ -24,7 +24,7 @@ async def startup_event():
         print("✅ SUCCESS: Database tables are ready.")
     except Exception as e:
         print(f"❌ ERROR: Could not create tables. {e}")
-        
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # Allow Vercel to talk to Render
@@ -81,7 +81,7 @@ async def identify_endpoint(file: UploadFile = File(...)):
         print(f"DEBUG: Generated {len(hashes)} hashes from peaks.") # <--- CRITICAL CHECK
 
         # SEARCH DB
-        matches = db.find_matches(hashes)
+        matches = db.get_matches(hashes)
         print(f"DEBUG: Database returned {len(matches)} matching hashes.")
         
         if not matches:
