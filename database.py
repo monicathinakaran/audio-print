@@ -20,6 +20,35 @@ class AudioDatabase:
                     )
                 self.cur = self.conn.cursor()
 
+    def create_tables(self):
+            """Creates the necessary database tables if they are missing."""
+            commands = [
+                """
+                CREATE TABLE IF NOT EXISTS songs (
+                    song_id SERIAL PRIMARY KEY,
+                    song_name VARCHAR(255) NOT NULL,
+                    file_hash VARCHAR(255)
+                )
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS fingerprints (
+                    hash VARCHAR(64) NOT NULL,
+                    song_id INTEGER REFERENCES songs(song_id) ON DELETE CASCADE,
+                    offset_val INTEGER NOT NULL
+                )
+                """,
+                # Create an index to make searching faster
+                "CREATE INDEX IF NOT EXISTS idx_hash ON fingerprints(hash)"
+            ]
+            try:
+                for command in commands:
+                    self.cur.execute(command)
+                self.conn.commit()
+                print("DEBUG: Database tables checked/created successfully.")
+            except Exception as e:
+                print(f"Database Init Error: {e}")
+                self.conn.rollback()
+
     def store_fingerprint(self, song_name, hashes):
         """
         1. Insert song name -> Get song_id
