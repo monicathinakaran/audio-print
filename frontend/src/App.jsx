@@ -37,7 +37,7 @@ function App() {
 
         try {
           // CHANGE THIS URL LATER to your Render Backend URL
-          const response = await fetch("https://audio-print.vercel.app/", {
+          const response = await fetch("https://audio-print.onrender.com", {
             method: "POST",
             body: formData
           })
