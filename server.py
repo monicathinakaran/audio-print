@@ -11,6 +11,20 @@ static_ffmpeg.add_paths() # <--- Add this
 
 app = FastAPI()
 
+# Initialize Database
+db = AudioDatabase()
+
+# --- ADD THIS BLOCK ---
+@app.on_event("startup")
+async def startup_event():
+    print("🔄 STARTUP: Checking database tables...")
+    try:
+        # This forces the create_tables method to run immediately
+        db.create_tables()
+        print("✅ SUCCESS: Database tables are ready.")
+    except Exception as e:
+        print(f"❌ ERROR: Could not create tables. {e}")
+        
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # Allow Vercel to talk to Render
