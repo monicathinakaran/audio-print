@@ -32,12 +32,12 @@ function App() {
         setStatus('analyzing')
         const audioBlob = new Blob(audioChunks, { type: mimeType })
         const formData = new FormData()
-        // Backend expects "file"
         formData.append("file", audioBlob, "recording.webm")
 
         try {
-          // CHANGE THIS URL LATER to your Render Backend URL
-          const response = await fetch("https://audio-print.onrender.com/identify", {
+          // REPLACE WITH YOUR RENDER BACKEND URL 
+          // Example: https://audioprint-xyz.onrender.com/identify
+          const response = await fetch("https://audio-print.onrender.com", {
             method: "POST",
             body: formData
           })
@@ -54,7 +54,6 @@ function App() {
           setStatus('error')
         }
         
-        // Stop all tracks
         stream.getTracks().forEach(track => track.stop())
       }
 
