@@ -15,7 +15,7 @@ class AudioDatabase:
                     self.conn = psycopg2.connect(
                         dbname="audioprint",
                         user="postgres", 
-                        password="YOUR_LOCAL_PASSWORD", 
+                        password="Sreethika@123", 
                         host="localhost"
                     )
                 self.cur = self.conn.cursor()
