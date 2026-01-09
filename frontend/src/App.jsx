@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { Mic, Loader2, Music, CheckCircle2, XCircle } from 'lucide-react'
 import './App.css'
 
 function App() {
-  const [status, setStatus] = useState('idle') // idle, recording, analyzing, success, error
+  const [status, setStatus] = useState('idle')
   const [result, setResult] = useState(null)
   const mediaRecorderRef = useRef(null)
 
@@ -14,10 +14,9 @@ function App() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       
-      // Determine the best MIME type (Chrome vs Safari)
       let mimeType = 'audio/webm;codecs=opus'
       if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'audio/mp4' // Safari fallback
+        mimeType = 'audio/mp4' 
       }
 
       const mediaRecorder = new MediaRecorder(stream, { mimeType })
@@ -35,9 +34,8 @@ function App() {
         formData.append("file", audioBlob, "recording.webm")
 
         try {
-          // REPLACE WITH YOUR RENDER BACKEND URL 
-          // Example: https://audioprint-xyz.onrender.com/identify
-          const response = await fetch("https://audio-print.onrender.com", {
+          // REPLACE THIS WITH YOUR RENDER URL
+          const response = await fetch("https://audioprint-YOUR-APP.onrender.com/identify", {
             method: "POST",
             body: formData
           })
@@ -59,7 +57,6 @@ function App() {
 
       mediaRecorder.start()
 
-      // Stop automatically after 10 seconds
       setTimeout(() => {
         if (mediaRecorder.state !== 'inactive') {
           mediaRecorder.stop()
