@@ -56,9 +56,7 @@ class AudioDatabase:
         """
         # 1. Insert Song
         self.cur.execute("""
-            INSERT INTO songs (song_name) 
-            VALUES (%s) 
-            RETURNING song_id;
+INSERT INTO fingerprints (hash, song_id, offset_val) VALUES %s
         """, (song_name,))
         
         song_id = self.cur.fetchone()[0]
@@ -105,7 +103,7 @@ class AudioDatabase:
             
         placeholders = ','.join(['%s'] * len(hash_list))
         query = f"""
-            SELECT f.hash_val, s.song_name, f.offset_val
+            SELECT f.hash, s.song_name, f.offset_val
             FROM fingerprints f
             JOIN songs s ON f.song_id = s.song_id
             WHERE f.hash_val IN ({placeholders});
