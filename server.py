@@ -6,6 +6,8 @@ from pydub import AudioSegment  # <--- Import this
 import os
 import shutil
 from collections import Counter
+import static_ffmpeg  # <--- Add this
+static_ffmpeg.add_paths() # <--- Add this
 
 app = FastAPI()
 
