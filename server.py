@@ -49,9 +49,15 @@ async def register_endpoint(file: UploadFile = File(...), song_name: str = Form(
             shutil.copyfileobj(file.file, buffer)
             
         audio = AudioSegment.from_file(raw_filename)
+        
+        # --- THE FIX: TRIM TO FIRST 60 SECONDS ---
+        # Free servers are too slow for full songs. 
+        # 60 seconds is PLENTY for identification.
+        audio = audio[:60000] 
+        # -----------------------------------------
+
         audio = audio.set_channels(1).set_frame_rate(22050)
         audio.export(clean_wav_filename, format="wav")
-
         # 2. Fingerprint
         S = fingerprinter.file_to_spectrogram(clean_wav_filename)
         peaks = fingerprinter.find_peaks(S, amp_min=-40)
