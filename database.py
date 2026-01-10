@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 class AudioDatabase:
     def __init__(self):
         # 1. Connect to Database (Render or Local)
-        db_url = os.getenv("DATABASE_URL")
+        db_url = "postgresql://audioprint_db_user:m88vWOiHn46KAKFuE6htnLUXXzScLdLU@dpg-d5gal0ffte5s73fgnpdg-a.oregon-postgres.render.com/audioprint_db"
         
         try:
             if db_url:
